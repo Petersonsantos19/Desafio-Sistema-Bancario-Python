@@ -1,5 +1,5 @@
 import textwrap
-from abc import ABC, abstractclassmethod, abstractproperty
+from abc import ABC
 from datetime import datetime
 
 
@@ -34,8 +34,8 @@ class Cliente:
 
     def realizar_transacao(self, conta, transacao):
         if len(conta.historico.transacoes_do_dia()) >= 10:
-            print("\n@@@ Você excedeu o número de transações permitidas para hoje! @@@")
-            returnd
+            print("\nXXX Você excedeu o número de transações permitidas para hoje! XXX")
+            return
 
         transacao.registrar(conta)
 
@@ -88,7 +88,7 @@ class Conta:
         excedeu_saldo = valor > saldo
 
         if excedeu_saldo:
-            print("\n@@@ Operação falhou! Você não tem saldo suficiente. @@@")
+            print("\nXXX Operação falhou! Você não tem saldo suficiente. XXX")
 
         elif valor > 0:
             self._saldo -= valor
@@ -96,7 +96,7 @@ class Conta:
             return True
 
         else:
-            print("\n@@@ Operação falhou! O valor informado é inválido. @@@")
+            print("\nXXX Operação falhou! O valor informado é inválido. XXX")
 
         return False
 
@@ -105,7 +105,7 @@ class Conta:
             self._saldo += valor
             print("\n=== Depósito realizado com sucesso! ===")
         else:
-            print("\n@@@ Operação falhou! O valor informado é inválido. @@@")
+            print("\nXXX Operação falhou! O valor informado é inválido. XXX")
             return False
 
         return True
@@ -134,10 +134,10 @@ class ContaCorrente(Conta):
         excedeu_saques = numero_saques >= self._limite_saques
 
         if excedeu_limite:
-            print("\n@@@ Operação falhou! O valor do saque excede o limite. @@@")
+            print("\nXXX Operação falhou! O valor do saque excede o limite. XXX")
 
         elif excedeu_saques:
-            print("\n@@@ Operação falhou! Número máximo de saques excedido. @@@")
+            print("\nXXX Operação falhou! Número máximo de saques excedido. XXX")
 
         else:
             return super().sacar(valor)
@@ -165,7 +165,7 @@ class Historico:
             {
                 "tipo": transacao.__class__.__name__,
                 "valor": transacao.valor,
-                "data": datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S"),
+                "data": datetime.datetime.now(datetime.UTC).strftime("%d-%m-%Y %H:%M:%S"),
             }
         )
 
@@ -178,7 +178,7 @@ class Historico:
                 yield transacao
 
     def transacoes_do_dia(self):
-        data_atual = datetime.utcnow().date()
+        data_atual = datetime.datetime.now(datetime.UTC).date()
         transacoes = []
         for transacao in self._transacoes:
             data_transacao = datetime.strptime(
@@ -191,11 +191,9 @@ class Historico:
 
 class Transacao(ABC):
     @property
-    @abstractproperty
     def valor(self):
         pass
 
-    @abstractclassmethod
     def registrar(self, conta):
         pass
 
@@ -233,7 +231,7 @@ class Deposito(Transacao):
 def log_transacao(func):
     def envelope(*args, **kwargs):
         resultado = func(*args, **kwargs)
-        print(f"{datetime.now()}: {func.__name__.upper()}")
+        print(f"{'data'}: {func.__name__.upper()}")
         return resultado
 
     return envelope
